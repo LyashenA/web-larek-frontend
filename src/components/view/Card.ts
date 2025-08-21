@@ -1,10 +1,6 @@
-import { IItem } from "../../types";
+import { ICardActions, IItem } from "../../types";
 import { Component } from "../base/Component";
 import { ensureElement } from "../../utils/utils";
-
-interface ICardActions {
-    onClick: (event: MouseEvent) => void;
-}
 
 export class Card extends Component<IItem> {
     protected _title: HTMLElement;
