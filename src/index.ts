@@ -72,12 +72,16 @@ events.on('card:select', (item: IItem) => {
     const productState = orderData.checkItem(item.id);
     const cardPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), productsData.getCategory(item.id), productState, {
         onClick: () => {
-            // Если товар в корзине, то удалить его, если нет, то добавить
-            orderData.checkItem(item.id) ? orderData.removeItem(item.id, item.price) : orderData.addItem(item.id, item.price);
-            // Поменять надпись на кнопке
-            cardPreview.toggleButtonText(orderData.checkItem(item.id));
+            if (item.price !== null) { // Если товар можно добавить в корзину
+                // Если товар в корзине, то удалить его, если нет, то добавить
+                orderData.checkItem(item.id) ? orderData.removeItem(item.id, item.price) : orderData.addItem(item.id, item.price);
+                // Поменять надпись на кнопке
+                cardPreview.toggleButtonText(orderData.checkItem(item.id));
+            }
         }
     });
+
+    item.price !== null ? cardPreview.toggleButtonText(productState) : cardPreview.toggleButtonDisabled(true);
 
     modal.render({
         content: cardPreview.render({
@@ -106,7 +110,7 @@ events.on('order:changed', () => {
 
     basket.valid = !!cartCount;
 
-    basket.items = orderData.order.items.map(item => {
+    basket.items = orderData.order.items.map((item, index) => {
         const card = new Card(cloneTemplate(cardBasketTemplate), {
             onClick: () => {
                 orderData.removeItem(item, productsData.getPrice(item));
@@ -115,7 +119,8 @@ events.on('order:changed', () => {
         });
         return card.render({
             title: productsData.getItem(item).title,
-            price: productsData.getItem(item).price
+            price: productsData.getItem(item).price,
+            index: index
         });
     });
     
@@ -182,15 +187,13 @@ events.on('order:ready', (data) => {
 events.on('contacts:submit', () => {
     api.postOrder(orderData.order)
         .then(data => {
+            orderData.clearOrder();
             const success = new Success(cloneTemplate(successTemplate), {
                 onClick: () => {
                     modal.close();
-                    orderData.clearOrder();
-                    // events.emit('auction:changed');
                 }
             });
 
-            console.log(data.total);
             modal.render({
                 content: success.render({
                     total: data.total

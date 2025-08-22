@@ -1,11 +1,12 @@
-import { ICardActions, IItem } from "../../types";
+import { ICardActions, IItemCard } from "../../types";
 import { Component } from "../base/Component";
 import { ensureElement } from "../../utils/utils";
 
-export class Card extends Component<IItem> {
+export class Card extends Component<IItemCard> {
     protected _title: HTMLElement;
     protected _price: HTMLElement;
     protected _button: HTMLButtonElement;
+    protected _index?: HTMLElement;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
         super(container);
@@ -13,6 +14,10 @@ export class Card extends Component<IItem> {
         this._title = ensureElement<HTMLElement>(`.card__title`, container);
         this._price = ensureElement<HTMLElement>(`.card__price`, container);
         this._button = container.querySelector(`.card__button`);
+
+        if (container.classList.contains('basket__item')) {
+            this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
+        }
 
         if (actions?.onClick) {
             if (this._button) {
@@ -29,6 +34,10 @@ export class Card extends Component<IItem> {
 
     set price(value: number | null) {
         value ? this.setText(this._price, `${value} синапсов`) : this.setText(this._price, 'Бесценно');
+    }
+
+    set index(value: number) {
+        this.setText(this._index, String(value + 1));
     }
 }
 
@@ -78,14 +87,27 @@ export class CardPreview extends CatalogItem {
     constructor(container: HTMLElement, categoryClassName: string, productState: boolean, actions?: ICardActions) {
         super(container, categoryClassName, actions);
         this._description = ensureElement<HTMLElement>(`.card__text`, container);
-        this.toggleButtonText(productState);
     }
 
     set description(value: string) {
         this.setText(this._description, value);
     }
 
+    set button(value: string) {
+        this.setText(this._button, value);
+    }
+
     toggleButtonText(itemState: boolean) {
         itemState ? this.setText(this._button, 'Удалить из корзины') : this.setText(this._button, 'Купить');
+    }
+
+    toggleButtonDisabled(state: boolean) {
+        this.setDisabled(this._button, state);
+    }
+
+    render(data?: Partial<IItemCard>): HTMLElement {
+        const extendData = { button: 'Недоступно', ...data}
+        data.price === null ? super.render(extendData) : super.render(data);
+        return this.container;
     }
 }

@@ -16,6 +16,10 @@ export interface IOrder {
     items: string[]
 }
 
+export interface IItemCard extends IItem {
+    index: number
+}
+
 export interface IApiListResponse<T> {
     total: number,
     items: T[]
