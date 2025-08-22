@@ -56,6 +56,10 @@ export class CatalogItem extends Card {
         this.setText(this._category, value);
     }
 
+    set image(value: string) {
+        this.setImage(this._image, value, this.title);
+    }
+
     getCategoryClassName(value: string) {
         switch(value) {
             case 'софт-скил':
@@ -75,16 +79,12 @@ export class CatalogItem extends Card {
                 break
         }
     }
-    
-    set image(value: string) {
-        this.setImage(this._image, value, this.title);
-    }
 }
 
 export class CardPreview extends CatalogItem {
     protected _description: HTMLElement;
 
-    constructor(container: HTMLElement, categoryClassName: string, productState: boolean, actions?: ICardActions) {
+    constructor(container: HTMLElement, categoryClassName: string, actions?: ICardActions) {
         super(container, categoryClassName, actions);
         this._description = ensureElement<HTMLElement>(`.card__text`, container);
     }

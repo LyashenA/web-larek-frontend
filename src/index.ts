@@ -70,7 +70,7 @@ events.on('items:changed', () => {
 // Показываем модальное окно товара
 events.on('card:select', (item: IItem) => {
     const productState = orderData.checkItem(item.id);
-    const cardPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), productsData.getCategory(item.id), productState, {
+    const cardPreview = new CardPreview(cloneTemplate(cardPreviewTemplate), productsData.getCategory(item.id), {
         onClick: () => {
             if (item.price !== null) { // Если товар можно добавить в корзину
                 // Если товар в корзине, то удалить его, если нет, то добавить
